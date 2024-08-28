@@ -3,5 +3,5 @@ services:
   jupyter:
     image: quay.io/jupyter/scipy-notebook:2024-01-15
     ports:
-      - "10000:8888"
+      - "8888:8888"
 
