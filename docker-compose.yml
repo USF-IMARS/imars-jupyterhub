@@ -4,4 +4,20 @@ services:
     image: quay.io/jupyter/scipy-notebook:2024-01-15
     ports:
       - "8888:8888"
+    environment:
+      - NB_UID=10003  # jovyan
+      - NB_GID=4504  # imars-common
+    volumes:
+      - type: volume
+        source: tpa_pgs
+        target: /srv/pgs
+      - ./home/jovynan/work:/srv/imars-objects/homes/jovyan:rw
+    restart: always
 
+volumes:
+  tpa_pgs:
+    driver: local
+    driver_opts:
+      type: "nfs4"
+      o: "rw,addr=131.247.188.131"
+      device: ":/data/tylarmurray"
