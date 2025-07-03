@@ -1,23 +1,29 @@
 services:
-  jupyter:
-    image: quay.io/jupyter/scipy-notebook:2024-01-15
-    build: jupyter
+  jupyterhub:
+    build: jupyterhub
+    container_name: jupyterhub
     ports:
-      - "8888:8888"
-    environment:
-      - NB_UID=10003  # jovyan
-      - NB_GID=4504  # imars-common
+      - "8000:8000"
     volumes:
-      - type: volume
-        source: tpa_pgs
-        target: /srv/pgs
-      - ./home/jovynan/work:/srv/imars-objects/homes/jovyan:rw
-    restart: always
+      - ./jupyterhub:/srv/jupyterhub
+      - /etc/passwd:/etc/passwd:ro
+      - /etc/shadow:/etc/shadow:ro
+      - /etc/group:/etc/group:ro
+      - /var/run/docker.sock:/var/run/docker.sock  # so jupyterhub can spawn a docker container
+    networks:
+      - imars-jupyterhub_default  # Must match the network name
 
-volumes:
-  tpa_pgs:
-    driver: local
-    driver_opts:
-      type: "nfs4"
-      o: "rw,addr=131.247.188.131"
-      device: ":/data/tylarmurray"
+networks:
+  imars-jupyterhub_default:
+    external: true
+    
+
+
+
+
+#    environment:
+#      - DOCKER_NOTEBOOK_IMAGE=quay.io/jupyter/scipy-notebook
+#      - JUPYTERHUB_ADMIN=adminusername
+#    command: >
+#      jupyterhub
+#      --Spawner.cmd="start-singleuser.sh"
