@@ -17,13 +17,3 @@ networks:
   imars-jupyterhub_default:
     external: true
     
-
-
-
-
-#    environment:
-#      - DOCKER_NOTEBOOK_IMAGE=quay.io/jupyter/scipy-notebook
-#      - JUPYTERHUB_ADMIN=adminusername
-#    command: >
-#      jupyterhub
-#      --Spawner.cmd="start-singleuser.sh"
