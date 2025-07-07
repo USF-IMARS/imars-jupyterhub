@@ -2,10 +2,6 @@ FROM jupyterhub/jupyterhub:4.0
 
 RUN pip install dockerspawner
 
-# === Install pip packages
-COPY requirements.txt requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
-
 # === Install conda packages
 # Install Miniconda
 ENV CONDA_DIR=/opt/conda
