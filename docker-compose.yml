@@ -35,7 +35,7 @@ services:
 
 networks:
   imars-jupyterhub_default:
-    
+    external: true    
 
 volumes:
   tpa_pgs:
@@ -50,3 +50,4 @@ volumes:
       type: "nfs4"
       o: "rw,addr=192.168.1.203"
       device: ":/yin/homes"
+
