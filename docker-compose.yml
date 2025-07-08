@@ -12,8 +12,8 @@ services:
       - /etc/group:/etc/group:ro
       - /var/run/docker.sock:/var/run/docker.sock  # so jupyterhub can spawn a docker container
       # data directories
-      - tpa_pgs:/srv/pgs
-      - yin:/srv/yin
+#      - tpa_pgs:/srv/pgs
+#      - yin:/srv/yin
 #      - /srv/pgs:/srv/pgs
 #      - /srv/yin:/srv/yin
     networks:
@@ -25,9 +25,9 @@ services:
   user-notebook:
     build: ./user-notebook  # path where your user Dockerfile lives
     image: imars-scipy-notebook
-    volumes:
-      - tpa_pgs:/srv/pgs
-      - yin:/srv/yin
+#    volumes:
+#      - tpa_pgs:/srv/pgs
+#      - yin:/srv/yin
     networks:
       - imars-jupyterhub_default
   # NOTE: volumes (for yin||pgs||imars-objects) are defined in
@@ -37,17 +37,22 @@ networks:
   imars-jupyterhub_default:
     external: true    
 
+#volumes:
+#  tpa_pgs:
+#    driver: local
+#    driver_opts:
+#      type: "nfs4"
+#      o: "rw,addr=131.247.188.131"
+#      device: ":/data/tylarmurray"
+#  yin:
+#    driver: local
+#    driver_opts:
+#      type: "nfs4"
+#      o: "rw,addr=192.168.1.203"
+#      device: ":/yin/homes"
+
 volumes:
   tpa_pgs:
-    driver: local
-    driver_opts:
-      type: "nfs4"
-      o: "rw,addr=131.247.188.131"
-      device: ":/data/tylarmurray"
+    external: true
   yin:
-    driver: local
-    driver_opts:
-      type: "nfs4"
-      o: "rw,addr=192.168.1.203"
-      device: ":/yin/homes"
-
+    external: true
