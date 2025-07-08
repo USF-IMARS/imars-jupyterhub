@@ -3,7 +3,7 @@ c = get_config()
 from dockerspawner import DockerSpawner
 
 c.JupyterHub.spawner_class = DockerSpawner
-c.DockerSpawner.image = 'quay.io/jupyter/scipy-notebook'
+c.DockerSpawner.image = 'imars-scipy-notebook'
 c.Spawner.default_url = '/lab'
 
 c.Authenticator.admin_users = {'tylar'}
@@ -18,3 +18,10 @@ c.JupyterHub.hub_port = 8081
 c.DockerSpawner.use_internal_ip = True
 c.DockerSpawner.network_name = 'imars-jupyterhub_default'
 
+# data volumes for users
+# NOTE: if you edit these you must edit the symlinks in
+#       user-notebook/Dockerfile too
+c.DockerSpawner.volumes = {
+    'tpa_pgs': '/srv/pgs',
+    'yin': '/srv/yin',
+}

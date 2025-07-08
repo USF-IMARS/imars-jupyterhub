@@ -5,15 +5,48 @@ services:
     ports:
       - "8000:8000"
     volumes:
+      # jupyterhub docker spawner setup
       - ./jupyterhub:/srv/jupyterhub
       - /etc/passwd:/etc/passwd:ro
       - /etc/shadow:/etc/shadow:ro
       - /etc/group:/etc/group:ro
       - /var/run/docker.sock:/var/run/docker.sock  # so jupyterhub can spawn a docker container
+      # data directories
+      - tpa_pgs:/srv/pgs
+      - yin:/srv/yin
+#      - /srv/pgs:/srv/pgs
+#      - /srv/yin:/srv/yin
     networks:
       - imars-jupyterhub_default  # Must match the network name
+#    environment:
+#      - JUPYTERHUB_LOG_LEVEL=DEBUG
+
+  # build block for juptyerhub-user-notebook docker containers:
+  user-notebook:
+    build: ./user-notebook  # path where your user Dockerfile lives
+    image: imars-scipy-notebook
+    volumes:
+      - tpa_pgs:/srv/pgs
+      - yin:/srv/yin
+    networks:
+      - imars-jupyterhub_default
+  # NOTE: volumes (for yin||pgs||imars-objects) are defined in
+  #       juptyer/jupyterhub_config.py under c.DockerSpawner.volumes
 
 networks:
   imars-jupyterhub_default:
-    external: true
     
+
+volumes:
+  tpa_pgs:
+    driver: local
+    driver_opts:
+      type: "nfs4"
+      o: "rw,addr=131.247.188.131"
+      device: ":/data/tylarmurray"
+  yin:
+    driver: local
+    driver_opts:
+      type: "nfs4"
+      o: "rw,addr=192.168.1.203"
+      device: ":/yin/homes"
