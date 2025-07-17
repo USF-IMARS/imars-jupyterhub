@@ -11,7 +11,3 @@ RUN apt-get update && apt-get install -y curl bzip2 && \
     bash ~/miniconda.sh -b -p $CONDA_DIR && \
     rm ~/miniconda.sh && \
     $CONDA_DIR/bin/conda clean -afy
-
-# Add your conda environment (optional)
-COPY environment.yml environment.yml
-RUN conda env update -n base -f environment.yml
