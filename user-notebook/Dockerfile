@@ -38,16 +38,16 @@ RUN wget https://download.esa.int/step/snap/10_0/installers/esa-snap_sentinel_li
 USER root
 RUN apt-get update && apt-get install -y \
     libxt6 libxmu6 libglu1-mesa libxrandr2 libxrender1 libxfixes3 \
-    libxi6 libxcursor1 libxcomposite1 libasound2 libfontconfig1 \
-    libgl1-mesa-glx libsm6 libxext6 libx11-6 unzip && \
+    libxi6 libxcursor1 libxcomposite1 libfontconfig1 \
+    libgl1 libsm6 libxext6 libx11-6 unzip && \
     rm -rf /var/lib/apt/lists/*
 
 # Set MATLAB path (assuming mounted at /opt/matlab)
-ENV MATLAB_ROOT=/opt/matlab/R2023b
+ENV MATLAB_ROOT=/home/jovyan/matlab/R2021b
 ENV PATH=$MATLAB_ROOT/bin:$PATH
 
 # Point to local license file (assumes mounted in container at /opt/matlab/licenses)
-ENV MLM_LICENSE_FILE=$MATLAB_ROOT/licenses/license.dat
+ENV MLM_LICENSE_FILE=$MATLAB_ROOT/licenses/network.lic
 
 # Install the MATLAB kernel
 USER jovyan

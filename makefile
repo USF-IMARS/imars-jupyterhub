@@ -16,6 +16,9 @@ rebuild:
 	@echo "✔️ Removing stale jupyter-* containers (spawned by DockerSpawner)..."
 	-docker ps -a --filter name=jupyter- -q | xargs --no-run-if-empty docker rm
 
+	@echo "pruning volumes..."
+	-docker volume prune -f
+
 	@echo "✔️ Rebuilding images without cache..."
 	docker-compose build --no-cache
 
