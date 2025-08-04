@@ -30,3 +30,26 @@ RUN wget https://download.esa.int/step/snap/10_0/installers/esa-snap_sentinel_li
     chmod +x ./esa-snap_sentinel_linux-10.0.0.sh && \
     printf "o\n2\n/home/jovyan/esa-snap\nx,4\ny\n/usr/local/bin\nn\n" | ./esa-snap_sentinel_linux-10.0.0.sh || true
 # ==============================================================================================
+
+# ==============================================================================================
+# === MATLAB setup
+# ==============================================================================================
+# Install system dependencies required for MATLAB
+USER root
+RUN apt-get update && apt-get install -y \
+    libxt6 libxmu6 libglu1-mesa libxrandr2 libxrender1 libxfixes3 \
+    libxi6 libxcursor1 libxcomposite1 libasound2 libfontconfig1 \
+    libgl1-mesa-glx libsm6 libxext6 libx11-6 unzip && \
+    rm -rf /var/lib/apt/lists/*
+
+# Set MATLAB path (assuming mounted at /opt/matlab)
+ENV MATLAB_ROOT=/opt/matlab/R2023b
+ENV PATH=$MATLAB_ROOT/bin:$PATH
+
+# Point to local license file (assumes mounted in container at /opt/matlab/licenses)
+ENV MLM_LICENSE_FILE=$MATLAB_ROOT/licenses/license.dat
+
+# Install the MATLAB kernel
+USER jovyan
+RUN pip install matlab_kernel && \
+    python -m matlab_kernel install --user
