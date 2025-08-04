@@ -26,6 +26,9 @@ services:
   user-notebook:
     build: ./user-notebook  # path where your user Dockerfile lives
     image: imars-scipy-notebook
+    environment:
+      - MATLAB_ROOT=/opt/matlab/R2023b
+      - MLM_LICENSE_FILE=/opt/matlab/R2023b/licenses/license.dat
 #    volumes:
 #      - tpa_pgs:/srv/pgs
 #      - yin:/srv/yin

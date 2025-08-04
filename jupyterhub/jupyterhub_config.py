@@ -24,4 +24,5 @@ c.DockerSpawner.network_name = 'imars-jupyterhub_default'
 c.DockerSpawner.volumes = {
     'tpa_pgs': '/srv/pgs',
     'yin': '/srv/yin',
+    '/opt/matlab/R2023b/licences': './matlab',
 }
