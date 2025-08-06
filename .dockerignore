@@ -1,0 +1,41 @@
+# Ignore unnecessary MATLAB directories to reduce image size
+matlab/R2021b/help/
+matlab/R2021b/examples/
+matlab/R2021b/toolbox/shared/
+matlab/R2021b/toolbox/simulink/
+matlab/R2021b/toolbox/matlab/demos/
+matlab/R2021b/toolbox/local/
+matlab/R2021b/external/mpi/
+matlab/R2021b/external/engines/python/examples/
+matlab/R2021b/java/jarext/
+
+# Ignore any logs or temp files
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# Ignore Python cache and notebook checkpoints
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.ipynb_checkpoints/
+
+# Ignore system or build artifacts
+.DS_Store
+Thumbs.db
+.env
+.vscode/
+.idea/
+
+# Ignore archives or installers
+*.zip
+*.tar
+*.tar.gz
+*.tar.bz2
+*.tgz
+*.deb
+*.rpm
+*.iso

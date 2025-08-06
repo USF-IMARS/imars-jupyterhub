@@ -27,8 +27,8 @@ services:
     build: ./user-notebook  # path where your user Dockerfile lives
     image: imars-scipy-notebook
     environment:
-      - MATLAB_ROOT=/home/jovyan/matlab/R2021b
-      - MLM_LICENSE_FILE=/home/jovyan/matlab/R2021b/licenses/network.lic
+      - MATLAB_ROOT=/home/jovyan/MATLAB/R2021b
+      - MLM_LICENSE_FILE=/home/jovyan/MATLAB/R2021b/licenses/network.lic
 #    volumes:
 #      - tpa_pgs:/srv/pgs
 #      - yin:/srv/yin

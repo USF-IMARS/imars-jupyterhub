@@ -34,22 +34,25 @@ RUN wget https://download.esa.int/step/snap/10_0/installers/esa-snap_sentinel_li
 # ==============================================================================================
 # === MATLAB setup
 # ==============================================================================================
-# Install system dependencies required for MATLAB
 USER root
+
+# Copy MATLAB into the container
+COPY matlab /home/jovyan/MATLAB
+
+# Optional: set environment variables
+ENV MATLAB_ROOT=/home/jovyan/MATLAB/R2021b
+ENV MLM_LICENSE_FILE=$MATLAB_ROOT/licenses/network.lic
+
+# Make sure permissions are correct
+#RUN chown -R jovyan:jovyan /home/jovyan/MATLAB
+
+# === install MATLAB kernel
 RUN apt-get update && apt-get install -y \
     libxt6 libxmu6 libglu1-mesa libxrandr2 libxrender1 libxfixes3 \
     libxi6 libxcursor1 libxcomposite1 libfontconfig1 \
     libgl1 libsm6 libxext6 libx11-6 unzip && \
     rm -rf /var/lib/apt/lists/*
 
-# Set MATLAB path (assuming mounted at /opt/matlab)
-ENV MATLAB_ROOT=/home/jovyan/matlab/R2021b
-ENV PATH=$MATLAB_ROOT/bin:$PATH
-
-# Point to local license file (assumes mounted in container at /opt/matlab/licenses)
-ENV MLM_LICENSE_FILE=$MATLAB_ROOT/licenses/network.lic
-
-# Install the MATLAB kernel
 USER jovyan
 RUN pip install matlab_kernel && \
     python -m matlab_kernel install --user

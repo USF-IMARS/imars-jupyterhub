@@ -5,3 +5,4 @@ jupyterhub.sqlite
 
 # === MATLAB
 license.dat
+user-notebook/matlab
