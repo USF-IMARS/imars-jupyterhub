@@ -13,8 +13,9 @@ rebuild:
 	@echo "✔️ Stopping and removing Compose-managed containers and volumes..."
 	docker-compose down --rmi all -v
 
-	@echo "✔️ Removing stale jupyter-* containers (spawned by DockerSpawner)..."
-	-docker ps -a --filter name=jupyter- -q | xargs --no-run-if-empty docker rm
+	@echo "✔️ Removing stale containers using imars-scipy-notebook..."
+	-docker ps -a --filter ancestor=imars-scipy-notebook -q | xargs --no-run-if-empty docker rm -f
+	docker-compose down --rmi all -v
 
 	@echo "pruning volumes..."
 	-docker volume prune -f

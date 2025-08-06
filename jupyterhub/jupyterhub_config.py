@@ -20,16 +20,12 @@ c.DockerSpawner.network_name = 'imars-jupyterhub_default'
 
 
 c.DockerSpawner.environment = {
-    'MATLAB_ROOT': '/home/jovyan/matlab/R2021b',
-    'MLM_LICENSE_FILE': '/home/jovyan/matlab/R2021b/licenses/license.dat'
+    'MATLAB_ROOT': '/home/jovyan/MATLAB/R2021b',
+    'MLM_LICENSE_FILE': '/home/jovyan/MATLAB/R2021b/licenses/license.dat'
 }
 
 c.DockerSpawner.volumes = {
     'tpa_pgs': '/srv/pgs',
     'yin': '/srv/yin',
-    '/usr/local/MATLAB/R2021b': {
-        'bind': '/home/jovyan/matlab/R2021b',
-        'mode': 'ro'
-    }
 }
 
