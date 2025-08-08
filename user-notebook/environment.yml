@@ -9,11 +9,13 @@ dependencies:
   - gdal
   - netcdf4>=1.7.2
   - numpy
+  - packaging<21
   - pandas
-  - pydap>=3.5.5
+  - pydap=3.2.2  # Last version that supports Python 3.9
   - pyproj
-  - python=3.11
-  - xarray>=2025.3.0
+  - python=3.9
+  - setuptools<58
+  - xarray<=2023.12.0  # last version that supports Python 3.9
   - pip
   - pip:
       - copernicusmarine>=2.0.1
