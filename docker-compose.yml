@@ -2,6 +2,7 @@ services:
   jupyterhub:
     build: jupyterhub
     container_name: jupyterhub
+    restart: unless-stopped
     ports:
       - "8000:8000"
     volumes:
