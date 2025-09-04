@@ -54,3 +54,27 @@ RUN mamba create -n py39-matlab -y python=3.9 && \
 d=json.load(open(p)); d['argv']=['/opt/conda/envs/py39-matlab/bin/python','-m','matlab_kernel','-f','{connection_file}']; \
 d['display_name']='MATLAB (py39)'; open(p,'w').write(json.dumps(d))" && \
     conda clean -afy
+# ==============================================================================================
+
+
+# ==============================================================================================
+# === Install Julia + IJulia kernel (for JupyterHub)
+# ==============================================================================================
+USER root
+RUN apt-get update && apt-get install -y wget tar && rm -rf /var/lib/apt/lists/*
+
+# Install Julia
+ENV JULIA_VERSION=1.10.4
+RUN wget https://julialang-s3.julialang.org/bin/linux/x64/${JULIA_VERSION%.*}/julia-${JULIA_VERSION}-linux-x86_64.tar.gz && \
+    tar -xvzf julia-${JULIA_VERSION}-linux-x86_64.tar.gz -C /opt/ && \
+    ln -s /opt/julia-${JULIA_VERSION}/bin/julia /usr/local/bin/julia && \
+    rm julia-${JULIA_VERSION}-linux-x86_64.tar.gz
+
+# Use a shared depot so IJulia (and future Julia pkgs) are installed once
+ENV JULIA_DEPOT_PATH=/opt/julia-depot
+RUN mkdir -p $JULIA_DEPOT_PATH && chown -R $NB_UID:$NB_GID $JULIA_DEPOT_PATH
+
+# Install IJulia and register a kernel
+USER $NB_USER
+# Note: installkernel() is the correct call (install() is undefined)
+RUN julia -e 'using Pkg; Pkg.add("IJulia"); using IJulia; IJulia.installkernel("Julia")'
