@@ -32,7 +32,9 @@ c.DockerSpawner.environment = {
     'MLM_LICENSE_FILE': '/home/jovyan/MATLAB/R2021b/licenses/license.dat'
 }
 
-# Mount volumes for user data
+# data volumes for users
+# NOTE: if you edit these you must edit the symlinks in
+#       user-notebook/Dockerfile too
 c.DockerSpawner.volumes = {
     'tpa_pgs': '/srv/pgs',
     'yin': '/srv/yin',
