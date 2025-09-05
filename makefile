@@ -2,14 +2,6 @@
 
 NETWORK=imars-jupyterhub_default
 
-rebuild:
-	@echo "✔️ Ensuring Docker network '$(NETWORK)' exists..."
-	-docker network inspect $(NETWORK) >/dev/null 2>&1 || docker network create $(NETWORK)
-
-	@echo "✔️ Ensuring Docker volumes for NFS mounts exist..."
-	-docker volume inspect tpa_pgs >/dev/null 2>&1 || docker volume create --driver local --opt type=nfs --opt o=rw,addr=131.247.188.131 --opt device=:/data/tylarmurray tpa_pgs
-	-docker volume inspect yin >/dev/null 2>&1 || docker volume create --driver local --opt type=nfs --opt o=rw,addr=192.168.1.203 --opt device=:/yin/homes yin
-
 	@echo "✔️ Stopping and removing Compose-managed containers and volumes..."
 	docker-compose down --rmi all -v
 
@@ -19,6 +11,13 @@ rebuild:
 
 	@echo "pruning volumes..."
 	-docker volume prune -f
+
+	@echo "✔️ Ensuring Docker network '$(NETWORK)' exists..."
+	-docker network inspect $(NETWORK) >/dev/null 2>&1 || docker network create $(NETWORK)
+
+	@echo "✔️ Ensuring Docker volumes for NFS mounts exist..."
+	-docker volume inspect tpa_pgs >/dev/null 2>&1 || docker volume create --driver local --opt type=nfs4 --opt o=rw,addr=131.247.188.131 --opt device=:/data/tylarmurray tpa_pgs
+	-docker volume inspect yin >/dev/null 2>&1 || docker volume create --driver local --opt type=nfs4 --opt o=rw,addr=192.168.1.203 --opt device=:/yin/homes yin
 
 	@echo "✔️ Rebuilding images without cache..."
 	docker-compose build --no-cache
