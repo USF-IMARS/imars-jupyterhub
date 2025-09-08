@@ -2,52 +2,52 @@ c = get_config()
 
 from dockerspawner import DockerSpawner
 
-# Use DockerSpawner to launch user notebooks in containers
+# Spawner / image
 c.JupyterHub.spawner_class = DockerSpawner
 c.DockerSpawner.image = 'imars-scipy-notebook'
+
+# Land on JupyterLab (without breaking the Hub base_url)
 c.Spawner.default_url = '/lab'
 
-# Admin users
+# Admins / auth
 c.Authenticator.admin_users = {'tylar'}
-# Optional: Disallow PAM to open sessions directly
 c.PAMAuthenticator.open_sessions = False
 
-# Networking configuration
-c.JupyterHub.hub_ip = 'jupyterhub'  # Service name in docker-compose
+# Networking
+c.JupyterHub.hub_ip = 'jupyterhub'      # service name from docker-compose
 c.JupyterHub.hub_connect_ip = 'jupyterhub'
 c.JupyterHub.hub_port = 8081
 c.DockerSpawner.use_internal_ip = True
 c.DockerSpawner.network_name = 'imars-jupyterhub_default'
 
-
-
-# Allow the Lab UI’s origin to connect via WS
-c.JupyterHub.allow_origin = '*'           # or more restrictively 'http://manglillo.marine.usf.edu:8000'
+# CORS (optional; keep as tight as you can)
+c.JupyterHub.allow_origin = '*'
 c.JupyterHub.allow_origin_pat = '.*'
-c.NotebookApp.disable_check_xsrf = True    # only if you’re OK with that risk
+# DO NOT disable XSRF on the user server; Hub handles auth/cookies securely.
+# If you must, prefer ServerApp flags inside the image, not here.
 
-# Environment variables for MATLAB in user containers
+# Env in user containers
 c.DockerSpawner.environment = {
     'MATLAB_ROOT': '/home/jovyan/MATLAB/R2021b',
-    'MLM_LICENSE_FILE': '/home/jovyan/MATLAB/R2021b/licenses/license.dat'
+    'MLM_LICENSE_FILE': '/home/jovyan/MATLAB/R2021b/licenses/license.dat',
 }
 
-# data volumes for users
-# NOTE: if you edit these you must edit the symlinks in
-#       user-notebook/Dockerfile too
+# Volumes
 c.DockerSpawner.volumes = {
     'tpa_pgs': '/srv/pgs',
     'yin': '/srv/yin',
 }
 
-# allow long timeouts
+# Timeouts
 c.MappingKernelManager.kernel_startup_timeout = 120
 c.MappingKernelManager.kernel_info_timeout    = 120
 
+# ⛔️ REMOVE the plain "jupyter lab" command — it breaks the base_url.
+# c.DockerSpawner.cmd = ["jupyter", "lab", ...]  # <-- DELETE THIS
 
-c.DockerSpawner.cmd = ["jupyter", "lab",
-    "--NotebookApp.allow_origin='*'",
-    "--NotebookApp.disable_check_xsrf=True",
-    "--ip=0.0.0.0",
-    "--no-browser",
-]
+# ✅ Use the JupyterHub-aware single-user entrypoint instead:
+# If your image is based on Jupyter Docker Stacks, this script exists:
+c.DockerSpawner.cmd = ["start-singleuser.sh"]
+
+# Fallback if your image doesn't have start-singleuser.sh:
+# c.DockerSpawner.cmd = ["jupyterhub-singleuser"]
