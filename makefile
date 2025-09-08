@@ -2,6 +2,7 @@
 
 NETWORK=imars-jupyterhub_default
 
+rebuild:
 	@echo "✔️ Stopping and removing Compose-managed containers and volumes..."
 	docker-compose down --rmi all -v
 
