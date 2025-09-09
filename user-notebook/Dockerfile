@@ -1,63 +1,56 @@
 FROM quay.io/jupyter/scipy-notebook:latest
 
-# Copy the environment file into the image
+# ---------------------- Your project env (unchanged) ----------------------
 COPY environment.yml /tmp/environment.yml
 
-# Create a new conda environment using the environment.yml
 RUN conda config --add channels conda-forge && \
     conda config --set channel_priority strict && \
     conda env create -f /tmp/environment.yml && \
     conda clean -afy
 
-# Activate the new environment by default in the notebook server
+# Make shells use your env by default (Hub still runs server from base)
 ENV CONDA_DEFAULT_ENV=planetary-env
 ENV PATH="/opt/conda/envs/planetary-env/bin:$PATH"
 
-# ==============================================================================================
-# === Create symlinks for user data directories
-# ==============================================================================================
+# ---------------------- Symlinks for user data ----------------------------
 RUN ln -s /srv/pgs /home/jovyan/pgs && \
     ln -s /srv/yin /home/jovyan/yin
 
-# ==============================================================================================
-# === Install ESA SNAP
-# ==============================================================================================
-RUN wget https://download.esa.int/step/snap/10_0/installers/esa-snap_sentinel_linux-10.0.0.sh && \
+# ---------------------- ESA SNAP ------------------------------------------
+RUN wget -q https://download.esa.int/step/snap/10_0/installers/esa-snap_sentinel_linux-10.0.0.sh && \
     chmod +x ./esa-snap_sentinel_linux-10.0.0.sh && \
-    printf "o\n2\n/home/jovyan/esa-snap\nx,4\ny\n/usr/local/bin\nn\n" | ./esa-snap_sentinel_linux-10.0.0.sh || true
+    printf "o\n2\n/home/jovyan/esa-snap\nx,4\ny\n/usr/local/bin\nn\n" | ./esa-snap_sentinel_linux-10.0.0.sh || true && \
+    rm -f ./esa-snap_sentinel_linux-10.0.0.sh
 
-# ==============================================================================================
-# === MATLAB setup
-# ==============================================================================================
+# ---------------------- MATLAB setup --------------------------------------
 USER root
-
-# Copy MATLAB directory into container
-COPY matlab /home/jovyan/MATLAB
-
-# Fix permissions
-RUN chown -R jovyan:users /home/jovyan/MATLAB && \
-    chmod -R u+w /home/jovyan/MATLAB
-
-# Install system dependencies for MATLAB runtime
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
     libxt6 libxmu6 libglu1-mesa libxrandr2 libxrender1 libxfixes3 \
-    libxi6 libxcursor1 libxcomposite1 libfontconfig1 \
-    libgl1 libsm6 libxext6 libx11-6 unzip && \
+    libxi6 libxcursor1 libxcomposite1 libfontconfig1 libgl1 libsm6 \
+    libxext6 libx11-6 unzip && \
     rm -rf /var/lib/apt/lists/*
 
+COPY matlab /home/jovyan/MATLAB
+RUN chown -R jovyan:users /home/jovyan/MATLAB && chmod -R u+w /home/jovyan/MATLAB
 USER jovyan
 
-# MATLAB environment variables
 ENV MATLAB_ROOT=/home/jovyan/MATLAB/R2021b
 ENV MLM_LICENSE_FILE=$MATLAB_ROOT/licenses/network.lic
 ENV PYTHONPATH=$MATLAB_ROOT/extern/engines/python:$PYTHONPATH
-ENV PATH=$MATLAB_ROOT/bin:$PATH  
+ENV PATH=$MATLAB_ROOT/bin:$PATH
 
-# Install MATLAB Python engine into planetary-env
-RUN cd /home/jovyan/MATLAB/R2021b/extern/engines/python && \
-    /opt/conda/envs/planetary-env/bin/python setup.py install
+# 1) Install matlab_kernel into BASE Python so Hub can import it
+RUN /opt/conda/bin/pip install --no-cache-dir matlab_kernel && \
+    /opt/conda/bin/python -m matlab_kernel install --sys-prefix || true
 
-# Install matlab_kernel and register it in Jupyter
-RUN /opt/conda/envs/planetary-env/bin/pip install matlab_kernel && \
-    /opt/conda/envs/planetary-env/bin/python -m matlab_kernel install --user
-# ==============================================================================================
+# 2) Create Python 3.9 env, install MATLAB engine + matlab_kernel there,
+#    and force the kernelspec under BASE prefix to use that env.
+RUN mamba create -n py39-matlab -y python=3.9 && \
+    conda run -n py39-matlab python -m pip install --no-cache-dir "$MATLAB_ROOT/extern/engines/python/." && \
+    conda run -n py39-matlab pip install --no-cache-dir matlab_kernel && \
+    conda run -n py39-matlab python -m matlab_kernel install --prefix=/opt/conda && \
+    /opt/conda/bin/python -c "import json,sys; p='/opt/conda/share/jupyter/kernels/matlab/kernel.json'; \
+d=json.load(open(p)); d['argv']=['/opt/conda/envs/py39-matlab/bin/python','-m','matlab_kernel','-f','{connection_file}']; \
+d['display_name']='MATLAB (py39)'; open(p,'w').write(json.dumps(d))" && \
+    conda clean -afy
