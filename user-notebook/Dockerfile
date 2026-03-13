@@ -33,12 +33,20 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 COPY matlab /home/jovyan/MATLAB
 RUN chown -R jovyan:users /home/jovyan/MATLAB && chmod -R u+w /home/jovyan/MATLAB
+
 USER jovyan
 
 ENV MATLAB_ROOT=/home/jovyan/MATLAB/R2021b
 ENV MLM_LICENSE_FILE=$MATLAB_ROOT/licenses/network.lic
 ENV PYTHONPATH=$MATLAB_ROOT/extern/engines/python:$PYTHONPATH
 ENV PATH=$MATLAB_ROOT/bin:$PATH
+
+
+# WORKAROUND for running 2021 version of MATLAB on 2026 linux
+# Remove or replace MATLAB's outdated libstdc++ with a symlink to the system version
+RUN rm /home/jovyan/MATLAB/R2021b/sys/os/glnxa64/libstdc++.so.6 && \
+    ln -s /usr/lib/x86_64-linux-gnu/libstdc++.so.6 \
+          /home/jovyan/MATLAB/R2021b/sys/os/glnxa64/libstdc++.so.6
 
 # 1) Install matlab_kernel into BASE Python so Hub can import it
 RUN /opt/conda/bin/pip install --no-cache-dir matlab_kernel && \
