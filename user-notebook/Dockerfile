@@ -17,10 +17,10 @@ RUN ln -s /srv/pgs /home/jovyan/pgs && \
     ln -s /srv/yin /home/jovyan/yin
 
 # ---------------------- ESA SNAP ------------------------------------------
-RUN wget -q https://download.esa.int/step/snap/13.0/installers/esa-snap_sentinel_linux-13.0.0.sh && \
-    chmod +x ./esa-snap_sentinel_linux-13.0.0.sh && \
-    printf "o\n2\n/home/jovyan/esa-snap\nx,4\ny\n/usr/local/bin\nn\n" | ./esa-snap_sentinel_linux-13.0.0.sh || true && \
-    rm -f ./esa-snap_sentinel_linux-13.0.0.sh
+RUN wget -q https://download.esa.int/step/snap/11.0/installers/esa-snap_sentinel_linux-11.0.0.sh && \
+    chmod +x ./esa-snap_sentinel_linux-11.0.0.sh && \
+    printf "o\n2\n/home/jovyan/esa-snap\nx,4\ny\n/usr/local/bin\nn\n" | ./esa-snap_sentinel_linux-11.0.0.sh || true && \
+    rm -f ./esa-snap_sentinel_linux-11.0.0.sh
 
 # ---------------------- MATLAB setup --------------------------------------
 USER root
