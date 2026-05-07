@@ -16,13 +16,55 @@ ENV PATH="/opt/conda/envs/planetary-env/bin:$PATH"
 RUN ln -s /srv/pgs /home/jovyan/pgs && \
     ln -s /srv/yin /home/jovyan/yin
 
+# =============================================================================
+# === Install R + Quarto + IRkernel (for JupyterHub)
+# =============================================================================
+USER root
+
+# System dependencies for R packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    r-base \
+    r-base-dev \
+    libcurl4-openssl-dev \
+    libssl-dev \
+    libxml2-dev \
+    libfontconfig1-dev \
+    libharfbuzz-dev \
+    libfribidi-dev \
+    libfreetype6-dev \
+    libpng-dev \
+    libtiff5-dev \
+    libjpeg-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Quarto
+ENV QUARTO_VERSION=1.6.42
+RUN wget -q https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.deb && \
+    dpkg -i quarto-${QUARTO_VERSION}-linux-amd64.deb && \
+    rm quarto-${QUARTO_VERSION}-linux-amd64.deb
+
+# Install IRkernel and register it with JupyterHub
+USER root
+RUN Rscript -e " \
+    install.packages(c('IRkernel', 'IRdisplay', 'repr'), \
+        repos='https://cloud.r-project.org', quiet=TRUE, \
+        lib='/usr/local/lib/R/site-library') \
+"
+
+USER $NB_USER
+RUN Rscript -e "IRkernel::installspec(prefix='/opt/conda')"
+
+# =============================================================================
 # ---------------------- ESA SNAP ------------------------------------------
+# =============================================================================
 RUN wget -q https://download.esa.int/step/snap/11.0/installers/esa-snap_sentinel_linux-11.0.0.sh && \
     chmod +x ./esa-snap_sentinel_linux-11.0.0.sh && \
     printf "o\n2\n/home/jovyan/esa-snap\nx,4\ny\n/usr/local/bin\nn\n" | ./esa-snap_sentinel_linux-11.0.0.sh || true && \
     rm -f ./esa-snap_sentinel_linux-11.0.0.sh
 
+# =============================================================================
 # ---------------------- MATLAB setup --------------------------------------
+# =============================================================================
 USER root
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
@@ -86,3 +128,5 @@ RUN mkdir -p $JULIA_DEPOT_PATH && chown -R $NB_UID:$NB_GID $JULIA_DEPOT_PATH
 USER $NB_USER
 # Note: installkernel() is the correct call (install() is undefined)
 RUN julia -e 'using Pkg; Pkg.add("IJulia"); using IJulia; IJulia.installkernel("Julia")'
+
+
