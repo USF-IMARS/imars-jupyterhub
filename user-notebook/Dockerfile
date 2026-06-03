@@ -128,5 +128,22 @@ RUN mkdir -p $JULIA_DEPOT_PATH && chown -R $NB_UID:$NB_GID $JULIA_DEPOT_PATH
 USER $NB_USER
 # Note: installkernel() is the correct call (install() is undefined)
 RUN julia -e 'using Pkg; Pkg.add("IJulia"); using IJulia; IJulia.installkernel("Julia")'
+# ==============================================================================================
 
 
+# ==============================================================================================
+# === Set up GitHub CLI
+# ==============================================================================================
+USER root
+
+RUN apt-get update && apt-get install -y --no-install-recommends gh 
+# ==============================================================================================
+
+
+# ==============================================================================================
+# === Jupytext for ipynb-to-qmd
+# ==============================================================================================
+USER root
+
+RUN /opt/conda/bin/pip install --no-cache-dir matlab_kernel jupytext 
+# ==============================================================================================
