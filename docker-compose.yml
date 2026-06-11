@@ -60,3 +60,5 @@ volumes:
     external: true
   yin:
     external: true
+  thing2:
+    external: true

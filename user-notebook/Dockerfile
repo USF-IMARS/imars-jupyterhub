@@ -14,7 +14,8 @@ ENV PATH="/opt/conda/envs/planetary-env/bin:$PATH"
 
 # ---------------------- Symlinks for user data ----------------------------
 RUN ln -s /srv/pgs /home/jovyan/pgs && \
-    ln -s /srv/yin /home/jovyan/yin
+    ln -s /srv/yin /home/jovyan/yin && \
+    ln -s /srv/thing2 /home/jovyan/thing2
 
 # =============================================================================
 # === Install R + Quarto + IRkernel (for JupyterHub)
