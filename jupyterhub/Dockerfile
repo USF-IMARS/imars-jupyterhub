@@ -1,6 +1,6 @@
 FROM jupyterhub/jupyterhub:4.0
 
-RUN pip install dockerspawner
+RUN pip install dockerspawner oauthenticator
 
 # === Install conda packages
 # Install Miniconda

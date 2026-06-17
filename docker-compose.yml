@@ -5,12 +5,11 @@ services:
     restart: unless-stopped
     ports:
       - "8000:8000"
+    env_file:
+      - .env
     volumes:
       # jupyterhub docker spawner setup
       - ./jupyterhub:/srv/jupyterhub
-      - /etc/passwd:/etc/passwd:ro
-      - /etc/shadow:/etc/shadow:ro
-      - /etc/group:/etc/group:ro
       - /var/run/docker.sock:/var/run/docker.sock  # so jupyterhub can spawn a docker container
       # data directories
 #      - tpa_pgs:/srv/pgs

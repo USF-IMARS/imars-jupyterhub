@@ -1,8 +1,12 @@
-.PHONY: rebuild
+.PHONY: rebuild env
 
 NETWORK=imars-jupyterhub_default
 
-rebuild:
+# OAuth settings live in .env (gitignored). Create from template if missing.
+env:
+	@test -f .env || (cp .env.example .env && echo "Created .env — edit it with your OAuth credentials before starting the hub.")
+
+rebuild: env
 	@echo "✔️ Stopping and removing Compose-managed containers and volumes..."
 	docker compose down --rmi all -v
 

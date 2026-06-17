@@ -1,3 +1,5 @@
+.env
+
 # === jupyterhub temp files
 jupyterhub-proxy.pid
 jupyterhub_cookie_secret
@@ -6,3 +8,4 @@ jupyterhub.sqlite
 # === MATLAB
 license.dat
 user-notebook/matlab
+.aider*
