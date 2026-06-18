@@ -41,4 +41,32 @@ Replace `<PASSWORD>` with the actual password for the imars account.
 
 These volumes are defined as external in docker-compose.yml and must exist before the services can start.
 
+## HTTPS
+
+HTTPS is handled by an nginx reverse proxy with Let's Encrypt certificates, following the same pattern as [mbon-dashboard-server](https://github.com/marinebon/mbon-dashboard-server).
+
+### Initial certificate setup
+
+Before starting nginx for the first time, obtain certificates (requires port 80 to be free; run as root):
+
+```bash
+./cert_update.sh
+```
+
+This stops nginx, runs certbot in standalone mode, copies `fullchain.pem` and `privkey.pem` into `./certs/`, and starts nginx.
+
+### Automatic renewal
+
+Add a root cron job on the host, for example:
+
+```text
+0 0,12 * * * cd /path/to/imars-jupyterhub && /bin/bash ./cert_update.sh
+```
+
+### Access
+
+JupyterHub is served at `https://manglillo.marine.usf.edu/` (ports 80 and 443). The hub container is no longer published directly on port 8000.
+
+If using OAuth, set the callback URL to `https://manglillo.marine.usf.edu/hub/oauth_callback`.
+
 
