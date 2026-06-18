@@ -9,7 +9,8 @@ services:
     volumes:
       - ./certs:/etc/nginx/certs
     depends_on:
-      - jupyterhub
+      jupyterhub:
+        condition: service_healthy
     networks:
       - imars-jupyterhub_default
 
@@ -17,6 +18,12 @@ services:
     build: jupyterhub
     container_name: jupyterhub
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/hub/health', timeout=3)\""]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
     volumes:
       # jupyterhub docker spawner setup
       - ./jupyterhub:/srv/jupyterhub

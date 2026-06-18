@@ -21,13 +21,13 @@ c.DockerSpawner.use_internal_ip = True
 c.DockerSpawner.network_name = 'imars-jupyterhub_default'
 
 # TLS is terminated by nginx; trust forwarded headers from the Docker network
-c.JupyterHub.trusted_downstream_ips = {
+c.JupyterHub.trusted_downstream_ips = [
     '127.0.0.1',
     '::1',
     '10.0.0.0/8',
     '172.16.0.0/12',
     '192.168.0.0/16',
-}
+]
 
 # CORS (optional; keep as tight as you can)
 c.JupyterHub.allow_origin = '*'

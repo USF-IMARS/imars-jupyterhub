@@ -69,4 +69,20 @@ JupyterHub is served at `https://manglillo.marine.usf.edu/` (ports 80 and 443). 
 
 If using OAuth, set the callback URL to `https://manglillo.marine.usf.edu/hub/oauth_callback`.
 
+### Troubleshooting 502 Bad Gateway
+
+nginx returns 502 when it cannot reach JupyterHub on port 8000. On the host:
+
+```bash
+docker compose ps
+docker logs jupyterhub --tail 100
+docker exec nginx wget -qO- http://jupyterhub:8000/hub/health
+```
+
+If `jupyterhub` is restarting or unhealthy, fix the hub first (missing NFS volumes, Docker socket permissions, etc.). After changing nginx config, rebuild and restart:
+
+```bash
+docker compose up --build -d nginx
+```
+
 
