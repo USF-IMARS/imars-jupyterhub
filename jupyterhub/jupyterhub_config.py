@@ -45,12 +45,13 @@ c.MappingKernelManager.kernel_info_timeout    = 120
 # ⛔️ REMOVE the plain "jupyter lab" command — it breaks the base_url.
 # c.DockerSpawner.cmd = ["jupyter", "lab", ...]  # <-- DELETE THIS
 
-# Enable .dotfile showing
-c.FileContentsManager.allow_hidden = True
-
 # ✅ Use the JupyterHub-aware single-user entrypoint instead:
 # If your image is based on Jupyter Docker Stacks, this script exists:
 c.DockerSpawner.cmd = ["start-singleuser.sh"]
 
 # Fallback if your image doesn't have start-singleuser.sh:
 # c.DockerSpawner.cmd = ["jupyterhub-singleuser"]
+
+# Enable .dotfile showing
+c.FileContentsManager.allow_hidden = True
+
