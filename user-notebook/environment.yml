@@ -9,6 +9,7 @@ dependencies:
   - dask
   - dask-ml
   - distributed
+  - earthengine-api
   - gdal
   - netcdf4>=1.7.2
   - pyproj
